@@ -1,53 +1,58 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr
-from sqlalchemy.orm import Session
-
-from backend.dependencies import get_db
-from backend.services.auth_service import create_user, authenticate_user
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 from backend.security.jwt import create_access_token
+from backend.dependencies import get_db
 
-router = APIRouter(prefix="/api/auth", tags=["Auth"])
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-
-class RegisterRequest(BaseModel):
-    email: EmailStr
-    username: str
-    password: str
-    full_name: str | None = None
-
+# ------------------ Schemas ------------------
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
+class UserOut(BaseModel):
+    id: str
+    name: str
+    roles: list[str]
 
-@router.post("/register")
-def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    user = create_user(
-        db=db,
-        email=data.email,
-        username=data.username,
-        password=data.password,
-        full_name=data.full_name
+class LoginResponse(BaseModel):
+    token: str
+    user: UserOut
+
+# ------------------ Routes ------------------
+
+@router.post("/login", response_model=LoginResponse)
+def login(data: LoginRequest):
+    """
+    TEMP AUTH:
+    Accepts any username/password and returns JWT
+    """
+    user = UserOut(
+        id="user-1",
+        name=data.username,
+        roles=["user"]
     )
+
+    token = create_access_token(
+        data={"sub": user.id, "roles": user.roles}
+    )
+
     return {
-        "id": user.id,
-        "email": user.email,
-        "username": user.username
+        "token": token,
+        "user": user
     }
 
 
-@router.post("/login")
-def login(data: LoginRequest, db: Session = Depends(get_db)):
-    user = authenticate_user(db, data.username, data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
-        )
-
-    token = create_access_token({"sub": str(user.id)})
+@router.get("/me")
+def me():
+    """
+    TEMP USER INFO
+    """
     return {
-        "access_token": token,
-        "token_type": "bearer"
+        "user": {
+            "id": "user-1",
+            "name": "Demo User",
+            "roles": ["user"]
+        }
     }

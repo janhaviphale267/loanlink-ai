@@ -12,14 +12,14 @@ class Settings(BaseSettings):
     # =========================
     # DATABASE
     # =========================
-    DB_ENGINE: str = "mysql"  # sqlite | mysql
+    DB_ENGINE: str = "mysql"  # mysql | sqlite
 
     SQLITE_DB_PATH: str = "loanlink.db"
 
     MYSQL_HOST: str = "localhost"
     MYSQL_PORT: int = 3306
     MYSQL_USER: str = "root"
-    MYSQL_PASSWORD: str = "MySQL@1810"
+    MYSQL_PASSWORD: str = ""
     MYSQL_DB: str = "loanlink_db"
 
     # =========================
@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # =========================
+    # OPENAI
+    # =========================
+    OPENAI_API_KEY: str = ""
+
     class Config:
         env_file = ".env"
         extra = "ignore"
@@ -37,3 +42,4 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+

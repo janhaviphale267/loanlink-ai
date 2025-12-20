@@ -2,25 +2,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.dependencies import get_db
-from backend.models.user import User
 from backend.security.permissions import require_admin
+from backend.models.audit_log import AuditLog
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 
-@router.get("/users")
-def list_users(
-    _: User = Depends(require_admin),
-    db: Session = Depends(get_db)
+@router.get("/audit-logs")
+def get_audit_logs(
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
 ):
-    users = db.query(User).all()
-    return [
-        {
-            "id": u.id,
-            "email": u.email,
-            "username": u.username,
-            "is_admin": u.is_admin,
-            "is_active": u.is_active
-        }
-        for u in users
-    ]
+    return db.query(AuditLog).order_by(AuditLog.created_at.desc()).all()
+

@@ -14,12 +14,11 @@ if settings.DB_ENGINE == "sqlite":
         connect_args={"check_same_thread": False},
         echo=settings.DEBUG
     )
-
 else:
     database_url = URL.create(
         drivername="mysql+pymysql",
         username=settings.MYSQL_USER,
-        password=settings.MySQL@1810,  
+        password=settings.MYSQL_PASSWORD,
         host=settings.MYSQL_HOST,
         port=settings.MYSQL_PORT,
         database=settings.MYSQL_DB,

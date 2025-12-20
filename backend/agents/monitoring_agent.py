@@ -1,7 +1,12 @@
-def detect_sentiment(message: str) -> str:
-    lowered = message.lower()
-    if "angry" in lowered or "frustrated" in lowered:
-        return "negative"
-    if "thanks" in lowered or "good" in lowered:
-        return "positive"
-    return "neutral"
+def detect_risk_flags(text: str) -> list[str]:
+    flags = []
+    lowered = text.lower()
+
+    if "fake" in lowered or "forged" in lowered:
+        flags.append("fraud_keyword")
+
+    if "angry" in lowered or "complaint" in lowered:
+        flags.append("customer_distress")
+
+    return flags
+
