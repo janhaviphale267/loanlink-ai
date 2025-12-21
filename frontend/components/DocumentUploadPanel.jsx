@@ -1,71 +1,98 @@
 import { useState } from "react";
-import { Upload, CheckCircle, Clock } from "lucide-react";
+import { Upload, Mic, CheckCircle } from "lucide-react";
+import { useLoanContext } from "../hooks/LoanContext";
 
-const STEPS = [
-  { id: 1, label: "Identity Proof", hint: "PAN / Aadhaar" },
-  { id: 2, label: "Income Proof", hint: "Salary slips / ITR" },
-  { id: 3, label: "Bank Statements", hint: "Last 6 months" },
-];
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 export default function DocumentUploadPanel() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [completed, setCompleted] = useState([]);
+  const { resetChat } = useLoanContext(); // optional future use
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
-  const markComplete = (stepId) => {
-    if (!completed.includes(stepId)) {
-      setCompleted([...completed, stepId]);
-      setCurrentStep(Math.min(stepId + 1, STEPS.length));
+  async function handleUpload() {
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_BASE}/api/documents/audio`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Audio upload failed");
+      }
+
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setError(err.message || "Upload failed");
+    } finally {
+      setUploading(false);
     }
-  };
+  }
 
   return (
-    <div className="bg-white border rounded-lg p-5 space-y-6">
+    <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-900">
-        Document Upload
+        Upload Audio Document
       </h3>
 
-      {/* STEPS */}
-      <div className="space-y-4">
-        {STEPS.map((step) => {
-          const isDone = completed.includes(step.id);
-          const isActive = currentStep === step.id;
+      <div className="border rounded-lg p-4 bg-gray-50">
+        <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
+          <Mic className="text-blue-600" size={20} />
+          <span className="text-xs text-gray-600">
+            Upload audio file (call recording / voice note)
+          </span>
+          <input
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+        </label>
 
-          return (
-            <div
-              key={step.id}
-              className={`flex items-center justify-between p-3 rounded-md border
-                ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}
-              `}
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-800">
-                  {step.label}
-                </p>
-                <p className="text-xs text-gray-500">{step.hint}</p>
-              </div>
-
-              {isDone ? (
-                <CheckCircle size={18} className="text-green-600" />
-              ) : (
-                <button
-                  onClick={() => markComplete(step.id)}
-                  className="flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline"
-                >
-                  <Upload size={14} />
-                  Upload
-                </button>
-              )}
-            </div>
-          );
-        })}
+        {file && (
+          <p className="text-xs text-gray-500 mt-2">
+            Selected: {file.name}
+          </p>
+        )}
       </div>
 
-      {/* STATUS */}
-      <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t">
-        <Clock size={12} />
-        {completed.length}/{STEPS.length} documents uploaded
-      </div>
+      <button
+        onClick={handleUpload}
+        disabled={!file || uploading}
+        className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2 rounded-md text-sm font-medium"
+      >
+        <Upload size={14} />
+        {uploading ? "Uploading…" : "Upload Audio"}
+      </button>
+
+      {error && (
+        <p className="text-xs text-red-600">{error}</p>
+      )}
+
+      {result && (
+        <div className="bg-white border rounded-lg p-3">
+          <div className="flex items-center gap-2 text-green-600 text-sm font-medium mb-2">
+            <CheckCircle size={16} />
+            Audio Processed
+          </div>
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold">Transcript:</span>{" "}
+            {result.transcript}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
-
