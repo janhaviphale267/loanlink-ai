@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { applyLoan } from "../api/loanApi";
+import { applyLoan, fetchLoanSummary } from "../api/loanApi";
 
 const STORAGE_KEY = "loanlink_application_id";
 
@@ -11,7 +11,6 @@ export default function useLoan() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
   async function startApplication(payload) {
     if (!payload) {
       throw new Error("Loan payload is required to apply");
@@ -22,13 +21,12 @@ export default function useLoan() {
 
     try {
       const res = await applyLoan(payload);
-
-      // Backend returns LoanApplication object
       const id = String(res.id);
+
       setApplicationId(id);
       localStorage.setItem(STORAGE_KEY, id);
 
-      // Minimal summary until underwriting runs
+      // Optimistic placeholder until summary loads
       setSummary({
         amount: `₹${payload.loan_amount.toLocaleString("en-IN")}`,
         tenure: `${payload.tenure_months / 12} Years`,
@@ -46,6 +44,27 @@ export default function useLoan() {
       setLoading(false);
     }
   }
+
+  // 🔗 Fetch real summary when applicationId is present (or restored)
+  useEffect(() => {
+    if (!applicationId) return;
+
+    let cancelled = false;
+
+    async function loadSummary() {
+      try {
+        const data = await fetchLoanSummary(applicationId);
+        if (!cancelled) setSummary(data);
+      } catch (err) {
+        // Keep existing summary if fetch fails
+      }
+    }
+
+    loadSummary();
+    return () => {
+      cancelled = true;
+    };
+  }, [applicationId]);
 
   function resetApplication() {
     localStorage.removeItem(STORAGE_KEY);
