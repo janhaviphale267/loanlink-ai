@@ -41,10 +41,23 @@ export default function App() {
 
         {/* MAIN CONTENT */}
         <main className="flex-1 p-6 overflow-y-auto">
-          <div className="bg-white rounded-xl border h-full flex flex-col">
-            {activeView === "chat" && <MainChat />}
-            {activeView === "applications" && <ApplicationStatus />}
-            {activeView === "documents" && <DocumentUploadPanel />}
+          <div className="h-full flex flex-col">
+            {activeView !== "chat" && (
+          <div className="mb-4">
+               <button
+             onClick={() => setActiveView("chat")}
+             className="text-sm text-blue-600 hover:underline"
+    >
+      ← Back to Chat
+    </button>
+  </div>
+)}
+
+{activeView === "chat" && <MainChat />}
+{activeView === "applications" && <ApplicationStatus />}
+{activeView === "documents" && <DocumentUploadPanel />}
+
+
           </div>
         </main>
       </div>
