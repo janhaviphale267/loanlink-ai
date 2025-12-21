@@ -27,7 +27,9 @@ const STEPS = [
 ];
 
 export default function ApplicationStatus({ currentStep = "requirements" }) {
-  const currentIndex = STEPS.findIndex(s => s.key === currentStep);
+  const completedIndex = STEPS.findIndex(
+    (step) => step.key === currentStep
+  );
 
   return (
     <div className="bg-white rounded-xl border p-6 space-y-6">
@@ -37,8 +39,8 @@ export default function ApplicationStatus({ currentStep = "requirements" }) {
 
       <div className="space-y-5">
         {STEPS.map((step, index) => {
-          const completed = index < currentIndex;
-          const active = index === currentIndex;
+          const completed = index <= completedIndex;
+          const active = index === completedIndex + 1;
 
           return (
             <div key={step.key} className="flex items-start gap-4">
@@ -58,7 +60,11 @@ export default function ApplicationStatus({ currentStep = "requirements" }) {
               <div>
                 <p
                   className={`font-medium ${
-                    active ? "text-blue-600" : "text-gray-800"
+                    active
+                      ? "text-blue-600"
+                      : completed
+                      ? "text-green-700"
+                      : "text-gray-800"
                   }`}
                 >
                   {step.title}
