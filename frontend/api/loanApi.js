@@ -1,46 +1,55 @@
-// Loan-related API wrappers
-import api from "./apiClient";
-import * as mock from "./mockApi";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
+/* ---------- GENERIC HELPERS ---------- */
+async function request(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    ...options,
+  });
 
-export async function fetchApplications(params = {}) {
-  if (USE_MOCK) return mock.fetchApplications(params);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "API request failed");
+  }
 
-  const res = await api.get("/loans", { params });
-  return res.data;
+  return res.json();
 }
 
-export async function getApplication(loanId) {
-  if (USE_MOCK) return mock.getApplication(loanId);
-
-  const res = await api.get(`/loans/${encodeURIComponent(loanId)}`);
-  return res.data;
+/* ---------- LOAN FLOW ---------- */
+export function startLoanApplication(payload) {
+  return request("/loan/start", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }
 
-export async function createApplication(payload) {
-  if (USE_MOCK) return mock.createApplication(payload);
-
-  const res = await api.post("/loans", payload);
-  return res.data;
+export function sendChatMessage(payload) {
+  return request("/chat/message", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }
 
-export async function updateApplication(loanId, updates) {
-  if (USE_MOCK) return mock.updateApplication(loanId, updates);
-
-  const res = await api.patch(
-    `/loans/${encodeURIComponent(loanId)}`,
-    updates
-  );
-  return res.data;
+export function fetchLoanSummary(applicationId) {
+  return request(`/loan/${applicationId}/summary`);
 }
 
-export async function updateStatus(loanId, status) {
-  if (USE_MOCK) return mock.updateStatus(loanId, status);
+/* ---------- DOCUMENTS ---------- */
+export function uploadDocument(applicationId, docType, file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("doc_type", docType);
 
-  const res = await api.post(
-    `/loans/${encodeURIComponent(loanId)}/status`,
-    { status }
-  );
-  return res.data;
+  return fetch(`${API_BASE}/documents/${applicationId}/upload`, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  }).then((res) => {
+    if (!res.ok) throw new Error("Document upload failed");
+    return res.json();
+  });
 }
