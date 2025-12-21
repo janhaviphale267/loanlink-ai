@@ -1,25 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, Menu, X, ShieldCheck } from "lucide-react";
 import LoanSummaryPanel from "./LoanSummaryPanel";
 import DocumentUploadPanel from "./DocumentUploadPanel";
+import useLoan from "../hooks/useLoan";
 
 export default function Header({
   userName = "Rajesh Kumar",
   role = "Customer",
 }) {
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState("summary"); // summary | documents
+  const [tab, setTab] = useState("summary");
+
+  // START LOAN HOOK
+  const { applicationId, summary, startApplication } = useLoan();
+
+  // TEMP: auto-start application (will be replaced later)
+  useEffect(() => {
+    if (!applicationId) {
+      startApplication();
+    }
+  }, [applicationId]);
 
   return (
     <>
       {/* TOP BAR */}
       <header className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
-        {/* LEFT */}
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold">
             LL
           </div>
-          <div className="leading-tight">
+          <div>
             <p className="text-sm font-semibold text-gray-900">LoanLink AI</p>
             <p className="text-xs text-green-600 font-medium">
               AI Loan Orchestration
@@ -27,13 +37,11 @@ export default function Header({
           </div>
         </div>
 
-        {/* CENTER */}
         <div className="hidden md:flex items-center gap-2 text-xs text-gray-600">
           <ShieldCheck size={14} className="text-green-600" />
           Bank-Grade Security
         </div>
 
-        {/* RIGHT */}
         <div className="flex items-center gap-4">
           <button className="relative">
             <Bell size={18} className="text-gray-600" />
@@ -60,7 +68,6 @@ export default function Header({
         transform transition-transform duration-300
         ${open ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* PANEL HEADER */}
         <div className="h-16 flex items-center justify-between px-5 border-b">
           <div className="flex gap-3 text-sm font-medium">
             <button
@@ -90,13 +97,13 @@ export default function Header({
           </button>
         </div>
 
-        {/* PANEL BODY */}
         <div className="p-5 overflow-y-auto h-[calc(100%-4rem)]">
-          {tab === "summary" && <LoanSummaryPanel />}
+          {tab === "summary" && summary && (
+            <LoanSummaryPanel {...summary} />
+          )}
           {tab === "documents" && <DocumentUploadPanel />}
         </div>
       </aside>
     </>
   );
 }
-
