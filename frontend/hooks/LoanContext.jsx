@@ -1,12 +1,19 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import useLoan from "./useLoan";
 import useChat from "./useChat";
 
 const LoanContext = createContext(null);
 
 export function LoanProvider({ children }) {
-  const loan = useLoan();      
-  const chat = useChat();      
+  const loan = useLoan();
+  const chat = useChat();
+
+  // 🔹 Application status state
+  const [currentStep, setCurrentStep] = useState("requirements");
+
+  function completeDocuments() {
+    setCurrentStep("documents");
+  }
 
   return (
     <LoanContext.Provider
@@ -18,6 +25,10 @@ export function LoanProvider({ children }) {
         loanError: loan.error,
         startApplication: loan.startApplication,
         resetApplication: loan.resetApplication,
+
+        // Application status
+        currentStep,
+        completeDocuments,
 
         // Chat
         messages: chat.messages,
