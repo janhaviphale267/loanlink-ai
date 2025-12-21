@@ -1,3 +1,5 @@
+import { Upload, CheckCircle } from "lucide-react";
+
 export default function DocumentItem({
   title,
   description,
@@ -5,11 +7,11 @@ export default function DocumentItem({
   onUpload,
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border rounded-xl p-4">
+    <div className="flex items-center justify-between gap-4 border rounded-lg p-4">
       {/* LEFT */}
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-          📄
+      <div className="flex items-start gap-3 flex-1">
+        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+          <Upload size={16} className="text-gray-500" />
         </div>
 
         <div>
@@ -19,25 +21,26 @@ export default function DocumentItem({
           {!uploaded && (
             <p className="text-xs text-red-500 mt-1">Required</p>
           )}
+
+          {uploaded && (
+            <div className="flex items-center gap-1 text-xs text-green-600 mt-1">
+              <CheckCircle size={12} />
+              Uploaded successfully
+            </div>
+          )}
         </div>
       </div>
 
       {/* RIGHT */}
-      {uploaded ? (
-        <span className="px-4 py-1.5 text-sm bg-green-100 text-green-700 rounded-full font-medium">
-          Uploaded ✓
-        </span>
-      ) : (
-        <label className="relative cursor-pointer">
-          <input
-            type="file"
-            className="absolute inset-0 opacity-0 cursor-pointer"
-            onChange={onUpload}
-          />
-          <span className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Choose File
-          </span>
-        </label>
+      {!uploaded && (
+        <button
+          onClick={onUpload}
+          className="shrink-0 px-4 py-2 text-sm font-medium
+                     bg-blue-600 text-white rounded-md
+                     hover:bg-blue-700 whitespace-nowrap"
+        >
+          Choose File
+        </button>
       )}
     </div>
   );
