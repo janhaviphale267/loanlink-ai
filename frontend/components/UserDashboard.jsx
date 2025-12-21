@@ -1,24 +1,18 @@
-import { PlusCircle, FileUp, History, Calculator } from "lucide-react";
+import { FileUp, History, Calculator } from "lucide-react";
 import { useState } from "react";
 import { useLoanContext } from "../hooks/LoanContext";
+import LoanApplyForm from "./LoanApplyForm";
 
 export default function UserDashboard() {
   const [showActions, setShowActions] = useState(false);
 
   const {
     applicationId,
-    startApplication,
-    loading,
   } = useLoanContext();
-
-  async function handleStartLoan() {
-    if (applicationId || loading) return;
-    await startApplication();
-  }
 
   return (
     <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col p-4">
-      {/* ACTIVE APPLICATION */}
+      {/* ================= ACTIVE APPLICATION ================= */}
       <div className="mb-6">
         <h3 className="text-xs font-semibold text-gray-500 mb-2">
           ACTIVE APPLICATION
@@ -26,7 +20,9 @@ export default function UserDashboard() {
 
         {applicationId ? (
           <div className="bg-white rounded-lg p-3 border">
-            <p className="text-sm font-medium text-gray-900">Loan Application</p>
+            <p className="text-sm font-medium text-gray-900">
+              Loan Application
+            </p>
             <p className="text-xs text-blue-600 font-semibold">
               In Progress
             </p>
@@ -41,18 +37,13 @@ export default function UserDashboard() {
         )}
       </div>
 
-      {/* PRIMARY CTA */}
-      <button
-        onClick={handleStartLoan}
-        disabled={loading || applicationId}
-        className="flex items-center justify-center gap-2 bg-blue-600 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-md mb-4 hover:bg-blue-700"
-      >
-        <PlusCircle size={16} />
-        {applicationId ? "Application Started" : "Start Loan Application"}
-      </button>
+      {/* ================= APPLY FORM (ONLY IF NO APPLICATION) ================= */}
+      {!applicationId && (
+        <LoanApplyForm />
+      )}
 
-      {/* QUICK ACTIONS (COLLAPSIBLE) */}
-      <div className="mt-auto">
+      {/* ================= QUICK ACTIONS ================= */}
+      <div className="mt-auto pt-4">
         <button
           onClick={() => setShowActions(!showActions)}
           className="w-full text-left text-xs font-semibold text-gray-500 mb-2"
