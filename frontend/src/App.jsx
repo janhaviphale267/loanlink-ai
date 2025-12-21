@@ -1,41 +1,38 @@
+import { useState } from "react";
 import Header from "../components/Header";
 import UserDashboard from "../components/UserDashboard";
+import LoanSummaryPanel from "../components/LoanSummaryPanel";
+import DocumentUploadPanel from "../components/DocumentUploadPanel";
 import MainChat from "../components/MainChat";
-import { LoanProvider } from "../hooks/LoanContext";
-import { AuthProvider, useAuth } from "../hooks/AuthContext";
 
-function GuardedApp() {
-  const { user } = useAuth();
-
-  if (!user?.isAuthenticated) {
-    return (
-      <div className="h-screen flex items-center justify-center text-sm text-gray-600">
-        Please sign in to continue.
-      </div>
-    );
-  }
+export default function App() {
+  const [activeView, setActiveView] = useState("applications");
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <Header userName={user.name} role={user.role} />
+    <div className="h-screen flex flex-col">
+      <Header />
+
       <div className="flex flex-1 overflow-hidden">
-        <div className="hidden md:block">
-          <UserDashboard />
-        </div>
-        <main className="flex-1 overflow-hidden">
-          <MainChat />
+        {/* LEFT SIDEBAR */}
+        <UserDashboard
+          activeView={activeView}
+          onChangeView={setActiveView}
+        />
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 bg-gray-50 overflow-y-auto p-6">
+          {activeView === "applications" && (
+            <div className="space-y-6">
+              <LoanSummaryPanel />
+              <MainChat />
+            </div>
+          )}
+
+          {activeView === "documents" && (
+            <DocumentUploadPanel />
+          )}
         </main>
       </div>
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <LoanProvider>
-        <GuardedApp />
-      </LoanProvider>
-    </AuthProvider>
   );
 }

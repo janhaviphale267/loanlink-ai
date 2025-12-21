@@ -1,109 +1,22 @@
-import { useState } from "react";
-import { Bell, Menu, X, ShieldCheck } from "lucide-react";
-import LoanSummaryPanel from "./LoanSummaryPanel";
-import DocumentUploadPanel from "./DocumentUploadPanel";
-import { useLoanContext } from "../hooks/LoanContext";
+import { ShieldCheck } from "lucide-react";
 
-export default function Header({
-  userName = "Rajesh Kumar",
-  role = "Customer",
-}) {
-  const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState("summary");
-
-  // 🔗 Context (no conditional rendering dependency)
-  useLoanContext(); // kept for future wiring
-
+export default function Header() {
   return (
-    <>
-      {/* ================= TOP BAR ================= */}
-      <header className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
-        {/* LEFT */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold">
-            LL
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">LoanLink AI</p>
-            <p className="text-xs text-green-600 font-medium">
-              AI Loan Orchestration
-            </p>
-          </div>
+    <header className="h-16 bg-white border-b flex items-center justify-between px-6">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-blue-600 text-white flex items-center justify-center font-bold">
+          LL
         </div>
-
-        {/* CENTER */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-gray-600">
-          <ShieldCheck size={14} className="text-green-600" />
-          Bank-Grade Security
+        <div>
+          <p className="text-sm font-semibold">LoanLink AI</p>
+          <p className="text-xs text-green-600">AI Loan Orchestration</p>
         </div>
+      </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-4">
-          <button className="relative">
-            <Bell size={18} className="text-gray-600" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
-
-          <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium text-gray-900">{userName}</p>
-            <p className="text-xs text-gray-500">{role}</p>
-          </div>
-
-          <button
-            onClick={() => setOpen(!open)}
-            className="p-2 rounded-md hover:bg-gray-100"
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* ================= SLIDE-IN PANEL ================= */}
-      <aside
-        className={`fixed top-0 right-0 h-full w-96 bg-white border-l shadow-lg z-50
-        transform transition-transform duration-300
-        ${open ? "translate-x-0" : "translate-x-full"}`}
-      >
-        {/* PANEL HEADER */}
-        <div className="h-16 flex items-center justify-between px-5 border-b">
-          <div className="flex gap-3 text-sm font-medium">
-            <button
-              onClick={() => setTab("summary")}
-              className={`pb-1 ${
-                tab === "summary"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500"
-              }`}
-            >
-              Summary
-            </button>
-
-            <button
-              onClick={() => setTab("documents")}
-              className={`pb-1 ${
-                tab === "documents"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "text-gray-500"
-              }`}
-            >
-              Documents
-            </button>
-          </div>
-
-          <button onClick={() => setOpen(false)}>
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* PANEL BODY */}
-        <div className="p-5 overflow-y-auto h-[calc(100%-4rem)]">
-          {tab === "summary" && (
-            <LoanSummaryPanel currentStep="requirements" />
-          )}
-
-          {tab === "documents" && <DocumentUploadPanel />}
-        </div>
-      </aside>
-    </>
+      <div className="flex items-center gap-2 text-xs text-gray-600">
+        <ShieldCheck size={14} className="text-green-600" />
+        Bank-Grade Security
+      </div>
+    </header>
   );
 }
