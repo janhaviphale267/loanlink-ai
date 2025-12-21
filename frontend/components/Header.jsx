@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bell, Menu, X, ShieldCheck } from "lucide-react";
 import LoanSummaryPanel from "./LoanSummaryPanel";
 import DocumentUploadPanel from "./DocumentUploadPanel";
@@ -11,19 +11,8 @@ export default function Header({
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("summary");
 
-  // 🔗 CONTEXT (single source of truth)
-  const {
-    applicationId,
-    summary,
-    startApplication,
-  } = useLoanContext();
-
-  // ⚠️ TEMP auto-start (explicitly marked, to be removed later)
-  useEffect(() => {
-    if (!applicationId) {
-      startApplication();
-    }
-  }, [applicationId, startApplication]);
+  // 🔗 Context (NO side effects here)
+  const { summary } = useLoanContext();
 
   return (
     <>
@@ -111,7 +100,6 @@ export default function Header({
           {tab === "summary" && summary && (
             <LoanSummaryPanel {...summary} />
           )}
-
           {tab === "documents" && <DocumentUploadPanel />}
         </div>
       </aside>
