@@ -1,34 +1,54 @@
-import { useState } from "react";
 import { PlusCircle, FileUp, History, Calculator } from "lucide-react";
+import { useState } from "react";
+import { useLoanContext } from "../hooks/LoanContext";
 
 export default function UserDashboard() {
   const [showActions, setShowActions] = useState(false);
 
+  const {
+    applicationId,
+    startApplication,
+    loading,
+  } = useLoanContext();
+
+  async function handleStartLoan() {
+    if (applicationId || loading) return;
+    await startApplication();
+  }
+
   return (
     <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col p-4">
-      {/* ACTIVE APPLICATIONS */}
+      {/* ACTIVE APPLICATION */}
       <div className="mb-6">
         <h3 className="text-xs font-semibold text-gray-500 mb-2">
-          ACTIVE APPLICATIONS
+          ACTIVE APPLICATION
         </h3>
 
-        <div className="bg-white rounded-lg p-3 border mb-2">
-          <p className="text-sm font-medium text-gray-900">Home Loan</p>
-          <p className="text-xs text-yellow-600 font-semibold">Under Review</p>
-          <p className="text-xs text-gray-500 mt-1">₹45,00,000</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-3 border">
-          <p className="text-sm font-medium text-gray-900">Personal Loan</p>
-          <p className="text-xs text-green-600 font-semibold">Approved</p>
-          <p className="text-xs text-gray-500 mt-1">₹3,00,000</p>
-        </div>
+        {applicationId ? (
+          <div className="bg-white rounded-lg p-3 border">
+            <p className="text-sm font-medium text-gray-900">Loan Application</p>
+            <p className="text-xs text-blue-600 font-semibold">
+              In Progress
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              ID: {applicationId}
+            </p>
+          </div>
+        ) : (
+          <div className="text-xs text-gray-400">
+            No active application
+          </div>
+        )}
       </div>
 
       {/* PRIMARY CTA */}
-      <button className="flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-medium py-2 rounded-md mb-4 hover:bg-blue-700">
+      <button
+        onClick={handleStartLoan}
+        disabled={loading || applicationId}
+        className="flex items-center justify-center gap-2 bg-blue-600 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-md mb-4 hover:bg-blue-700"
+      >
         <PlusCircle size={16} />
-        Start New Application
+        {applicationId ? "Application Started" : "Start Loan Application"}
       </button>
 
       {/* QUICK ACTIONS (COLLAPSIBLE) */}
@@ -60,5 +80,3 @@ function ActionItem({ icon, label }) {
     </div>
   );
 }
-
-
