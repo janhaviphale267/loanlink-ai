@@ -11,8 +11,8 @@ export default function Header({
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("summary");
 
-  // 🔗 Context (NO side effects here)
-  const { summary } = useLoanContext();
+  // 🔗 Context (no conditional rendering dependency)
+  useLoanContext(); // kept for future wiring
 
   return (
     <>
@@ -97,9 +97,10 @@ export default function Header({
 
         {/* PANEL BODY */}
         <div className="p-5 overflow-y-auto h-[calc(100%-4rem)]">
-          {tab === "summary" && summary && (
-            <LoanSummaryPanel {...summary} />
+          {tab === "summary" && (
+            <LoanSummaryPanel currentStep="requirements" />
           )}
+
           {tab === "documents" && <DocumentUploadPanel />}
         </div>
       </aside>
