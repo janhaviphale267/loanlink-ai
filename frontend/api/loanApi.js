@@ -27,6 +27,11 @@ export function applyLoan(payload) {
   });
 }
 
+// ✅ ADD THIS FUNCTION
+export function fetchLoanSummary(loanId) {
+  return request(`/api/loans/${loanId}/summary`);
+}
+
 /* ---------- CHAT ---------- */
 export function startChatSession() {
   return request("/api/chat/session", {
