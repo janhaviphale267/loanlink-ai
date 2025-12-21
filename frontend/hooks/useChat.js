@@ -1,40 +1,53 @@
 import { useEffect, useState } from "react";
-import { sendChatMessage } from "../api/loanApi";
+import {
+  startChatSession,
+  sendChatMessage,
+  fetchConversation,
+} from "../api/loanApi";
 
-function storageKey(appId) {
-  return appId ? `loanlink_chat_${appId}` : null;
-}
+const STORAGE_KEY = "loanlink_chat_session_id";
 
-export default function useChat(applicationId) {
+export default function useChat() {
+  const [sessionId, setSessionId] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY);
+  });
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Restore chat when applicationId becomes available/changes
+  // Start or restore chat session
   useEffect(() => {
-    if (!applicationId) return;
-    const key = storageKey(applicationId);
-    const cached = localStorage.getItem(key);
-    if (cached) {
-      try {
-        setMessages(JSON.parse(cached));
-      } catch {
-        setMessages([]);
-      }
-    } else {
-      setMessages([]);
+    if (sessionId) {
+      fetchConversation(sessionId)
+        .then((history) => {
+          const mapped = history.map((m) => ({
+            sender: m.from_ === "ai" ? "ai" : "user",
+            message: m.text,
+            confidence: m.meta?.confidence,
+          }));
+          setMessages(mapped);
+        })
+        .catch(() => {
+          setMessages([]);
+        });
+      return;
     }
-  }, [applicationId]);
 
-  // Persist chat on change
-  useEffect(() => {
-    if (!applicationId) return;
-    const key = storageKey(applicationId);
-    localStorage.setItem(key, JSON.stringify(messages));
-  }, [messages, applicationId]);
+    async function initSession() {
+      try {
+        const res = await startChatSession();
+        setSessionId(res.sessionId);
+        localStorage.setItem(STORAGE_KEY, res.sessionId);
+      } catch (err) {
+        setError("Failed to start chat session");
+      }
+    }
+
+    initSession();
+  }, [sessionId]);
 
   async function sendMessage(text) {
-    if (!text?.trim() || !applicationId) return;
+    if (!text?.trim() || !sessionId) return;
 
     const userMsg = {
       sender: "user",
@@ -46,15 +59,15 @@ export default function useChat(applicationId) {
     setError(null);
 
     try {
-      const response = await sendChatMessage({
-        application_id: applicationId,
+      const res = await sendChatMessage({
+        sessionId,
         message: text,
       });
 
       const aiMsg = {
         sender: "ai",
-        message: response.reply,
-        confidence: response.confidence,
+        message: res.message.text,
+        confidence: res.message.meta?.confidence,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -65,10 +78,9 @@ export default function useChat(applicationId) {
     }
   }
 
-  // Optional: clear chat for this application
   function resetChat() {
-    if (!applicationId) return;
-    localStorage.removeItem(storageKey(applicationId));
+    localStorage.removeItem(STORAGE_KEY);
+    setSessionId(null);
     setMessages([]);
   }
 
