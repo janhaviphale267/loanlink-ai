@@ -20,7 +20,7 @@ export default function MainChat() {
   }
 
   return (
-    <section className="flex flex-col h-full bg-gray-50">
+    <section className="flex flex-col h-full bg-gray-50 relative">
       {/* CHAT STREAM */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {messages.length === 0 && (
@@ -46,13 +46,14 @@ export default function MainChat() {
             AI is typing…
           </div>
         )}
-
-        {chatError && (
-          <div className="text-xs text-red-600">
-            {chatError}
-          </div>
-        )}
       </div>
+
+      {/* ERROR TOAST */}
+      {chatError && (
+        <div className="absolute bottom-24 right-6 bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-md shadow">
+          {chatError}
+        </div>
+      )}
 
       {/* INPUT BAR */}
       <div className="border-t bg-white px-4 py-3">
