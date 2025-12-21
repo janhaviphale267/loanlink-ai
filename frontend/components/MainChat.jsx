@@ -1,30 +1,54 @@
-import ChatBubble from "./ChatBubble";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { useState } from "react";
+import ChatBubble from "./ChatBubble";
+import useChat from "../hooks/useChat";
 
 export default function MainChat() {
-  const [message, setMessage] = useState("");
+  // TEMP: static applicationId until routing/state is added
+  const applicationId = "temp-app-001";
+
+  const { messages, loading, error, sendMessage } = useChat(applicationId);
+  const [input, setInput] = useState("");
+
+  function handleSend() {
+    if (!input.trim()) return;
+    sendMessage(input);
+    setInput("");
+  }
 
   return (
     <section className="flex flex-col h-full bg-gray-50">
-      {/* CHAT MESSAGES */}
+      {/* CHAT STREAM */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        <ChatBubble
-          sender="ai"
-          message="Hello Rajesh 👋 I’m your AI Loan Officer. I can help you check eligibility, EMI, and guide you step-by-step."
-          confidence={95}
-        />
+        {messages.length === 0 && (
+          <ChatBubble
+            sender="ai"
+            message="Hello 👋 I’m your AI Loan Officer. How can I help you today?"
+            confidence={95}
+          />
+        )}
 
-        <ChatBubble
-          sender="user"
-          message="I need a home loan of ₹45 lakhs. Can you help me check eligibility?"
-        />
+        {messages.map((msg, idx) => (
+          <ChatBubble
+            key={idx}
+            sender={msg.sender}
+            message={msg.message}
+            confidence={msg.confidence}
+          />
+        ))}
 
-        <ChatBubble
-          sender="ai"
-          message="Sure. To assess eligibility, I’ll need your monthly income and existing EMIs."
-          confidence={93}
-        />
+        {loading && (
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <Loader2 className="animate-spin" size={14} />
+            AI is typing…
+          </div>
+        )}
+
+        {error && (
+          <div className="text-xs text-red-600">
+            {error}
+          </div>
+        )}
       </div>
 
       {/* INPUT BAR */}
@@ -32,15 +56,17 @@ export default function MainChat() {
         <div className="flex items-center gap-3">
           <input
             type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type your message…"
             className="flex-1 text-sm px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-md"
-            disabled={!message.trim()}
+            onClick={handleSend}
+            disabled={!input.trim() || loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white p-2 rounded-md"
           >
             <Send size={16} />
           </button>
