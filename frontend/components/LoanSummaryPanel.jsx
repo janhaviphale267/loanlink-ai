@@ -1,94 +1,67 @@
-import React from "react";
-
 export default function LoanSummaryPanel({
-  application,
-  onResume = () => {},
-  onView = () => {},
+  amount = "₹45,00,000",
+  tenure = "20 Years",
+  rate = "8.5% p.a.",
+  emi = "₹38,765",
+  creditScore = 780,
+  riskLevel = "Low",
 }) {
-  if (!application) {
-    return (
-      <aside className="panel loan-summary" aria-label="Loan summary">
-        <div style={{ fontWeight: 700 }}>Loan Summary</div>
-        <div className="small">No application selected</div>
-      </aside>
-    );
-  }
-
-  const {
-    id,
-    amount,
-    tenureMonths,
-    emi,
-    interestRate,
-    risk,
-    confidence,
-    status,
-  } = application;
-
   return (
-    <aside className="panel loan-summary" aria-label="Loan summary">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ fontWeight: 700 }}>Loan Summary</div>
-        <div className="pill">{risk}</div>
-      </div>
+    <div className="space-y-6 text-sm">
+      {/* AMOUNT */}
+      <section>
+        <p className="text-xs text-gray-500">Loan Amount</p>
+        <p className="text-2xl font-bold text-blue-600">{amount}</p>
+      </section>
 
-      <div
-        style={{
-          fontSize: 18,
-          fontWeight: 800,
-          color: "var(--primary)",
-        }}
-      >
-        ₹{amount.toLocaleString()}
-      </div>
+      {/* DETAILS */}
+      <section className="grid grid-cols-2 gap-4">
+        <Info label="Tenure" value={tenure} />
+        <Info label="Interest Rate" value={rate} />
+        <Info label="Estimated EMI" value={emi} highlight />
+      </section>
 
-      <div className="small">
-        Application: {id} • Status: {status}
-      </div>
-      <div className="small">Tenure: {tenureMonths} months</div>
-
-      <div style={{ marginTop: 8 }}>
-        <div className="metric">
-          <div className="small">EMI</div>
-          <div style={{ fontWeight: 700 }}>
-            ₹{emi.toLocaleString()}
-          </div>
+      {/* RISK */}
+      <section>
+        <p className="text-xs text-gray-500 mb-1">Risk Assessment</p>
+        <div className="flex items-center justify-between bg-gray-50 border rounded-md px-3 py-2">
+          <span>Credit Score</span>
+          <span className="font-medium">{creditScore}</span>
         </div>
-
-        <div className="metric">
-          <div className="small">Interest Rate</div>
-          <div>{interestRate}%</div>
-        </div>
-
-        <div className="metric">
-          <div className="small">Credit Confidence</div>
-          <div>{Math.round((confidence || 0) * 100)}%</div>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 12 }}>
-        <button
-          type="button"
-          className="btn primary"
-          onClick={() => onResume(application)}
+        <p
+          className={`mt-2 text-xs font-semibold ${
+            riskLevel === "Low"
+              ? "text-green-600"
+              : riskLevel === "Medium"
+              ? "text-yellow-600"
+              : "text-red-600"
+          }`}
         >
-          Resume Conversation
-        </button>
-        <button
-          type="button"
-          className="btn ghost"
-          style={{ marginLeft: 8 }}
-          onClick={() => onView(application)}
-        >
-          View Details
-        </button>
-      </div>
-    </aside>
+          {riskLevel} Risk
+        </p>
+      </section>
+
+      {/* CTA */}
+      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium">
+        View Detailed Breakdown
+      </button>
+    </div>
   );
 }
+
+function Info({ label, value, highlight }) {
+  return (
+    <div>
+      <p className="text-xs text-gray-500">{label}</p>
+      <p
+        className={`font-medium ${
+          highlight ? "text-gray-900" : "text-gray-700"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+
