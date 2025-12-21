@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  startLoanApplication,
-  fetchLoanSummary,
-} from "../api/loanApi";
+import { applyLoan } from "../api/loanApi";
 
 const STORAGE_KEY = "loanlink_application_id";
 
-export default function useLoan(initialPayload = null) {
+export default function useLoan() {
   const [applicationId, setApplicationId] = useState(() => {
     return localStorage.getItem(STORAGE_KEY);
   });
@@ -14,41 +11,42 @@ export default function useLoan(initialPayload = null) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Start loan application (explicit trigger)
-  async function startApplication(payload = initialPayload) {
+  
+  async function startApplication(payload) {
+    if (!payload) {
+      throw new Error("Loan payload is required to apply");
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const res = await startLoanApplication(payload || {});
-      setApplicationId(res.application_id);
-      localStorage.setItem(STORAGE_KEY, res.application_id);
-      return res.application_id;
+      const res = await applyLoan(payload);
+
+      // Backend returns LoanApplication object
+      const id = String(res.id);
+      setApplicationId(id);
+      localStorage.setItem(STORAGE_KEY, id);
+
+      // Minimal summary until underwriting runs
+      setSummary({
+        amount: `₹${payload.loan_amount.toLocaleString("en-IN")}`,
+        tenure: `${payload.tenure_months / 12} Years`,
+        rate: "—",
+        emi: "—",
+        creditScore: "—",
+        riskLevel: "Pending",
+      });
+
+      return id;
     } catch (err) {
-      setError(err.message || "Failed to start application");
+      setError(err.message || "Failed to apply for loan");
       throw err;
     } finally {
       setLoading(false);
     }
   }
 
-  // Fetch summary when applicationId changes or restores
-  useEffect(() => {
-    if (!applicationId) return;
-
-    async function loadSummary() {
-      try {
-        const data = await fetchLoanSummary(applicationId);
-        setSummary(data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch loan summary");
-      }
-    }
-
-    loadSummary();
-  }, [applicationId]);
-
-  // Optional: clear persisted state (future use)
   function resetApplication() {
     localStorage.removeItem(STORAGE_KEY);
     setApplicationId(null);
