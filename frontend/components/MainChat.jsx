@@ -4,7 +4,13 @@ import ChatBubble from "./ChatBubble";
 import { useLoanContext } from "../hooks/LoanContext";
 
 export default function MainChat() {
-  const { messages, loading, error, sendMessage } = useLoanContext();
+  const {
+    messages,
+    chatLoading,
+    chatError,
+    sendMessage,
+  } = useLoanContext();
+
   const [input, setInput] = useState("");
 
   function handleSend() {
@@ -15,6 +21,7 @@ export default function MainChat() {
 
   return (
     <section className="flex flex-col h-full bg-gray-50">
+      {/* CHAT STREAM */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {messages.length === 0 && (
           <ChatBubble
@@ -33,16 +40,21 @@ export default function MainChat() {
           />
         ))}
 
-        {loading && (
+        {chatLoading && (
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <Loader2 className="animate-spin" size={14} />
             AI is typing…
           </div>
         )}
 
-        {error && <div className="text-xs text-red-600">{error}</div>}
+        {chatError && (
+          <div className="text-xs text-red-600">
+            {chatError}
+          </div>
+        )}
       </div>
 
+      {/* INPUT BAR */}
       <div className="border-t bg-white px-4 py-3">
         <div className="flex items-center gap-3">
           <input
@@ -54,7 +66,7 @@ export default function MainChat() {
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || chatLoading}
             className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white p-2 rounded-md"
           >
             <Send size={16} />
