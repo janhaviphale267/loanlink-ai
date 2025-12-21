@@ -12,6 +12,8 @@ export default function LoanApplyForm({ onSuccess }) {
     employment_type: "Salaried",
   });
 
+  const [formError, setFormError] = useState(null);
+
   function update(e) {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -19,26 +21,66 @@ export default function LoanApplyForm({ onSuccess }) {
 
   async function submit(e) {
     e.preventDefault();
+    setFormError(null);
+
     const payload = {
       loan_amount: Number(form.loan_amount),
-      loan_purpose: form.loan_purpose,
+      loan_purpose: form.loan_purpose.trim(),
       tenure_months: Number(form.tenure_months),
       annual_income: Number(form.annual_income),
       employment_type: form.employment_type,
     };
-    await startApplication(payload);
-    onSuccess?.();
+
+    // ✅ BASIC VALIDATION (QA HARDENING)
+    if (
+      !payload.loan_amount ||
+      !payload.tenure_months ||
+      !payload.annual_income ||
+      !payload.loan_purpose
+    ) {
+      setFormError("Please fill all fields with valid values.");
+      return;
+    }
+
+    try {
+      await startApplication(payload);
+      onSuccess?.();
+    } catch {
+      // error already handled by context
+    }
   }
 
   return (
     <form onSubmit={submit} className="space-y-4 bg-white border rounded-lg p-4">
-      <h3 className="text-sm font-semibold text-gray-900">Apply for a Loan</h3>
+      <h3 className="text-sm font-semibold text-gray-900">
+        Apply for a Loan
+      </h3>
 
       <div className="grid grid-cols-2 gap-3">
-        <Input label="Loan Amount (₹)" name="loan_amount" value={form.loan_amount} onChange={update} />
-        <Input label="Annual Income (₹)" name="annual_income" value={form.annual_income} onChange={update} />
-        <Input label="Tenure (months)" name="tenure_months" value={form.tenure_months} onChange={update} />
-        <Input label="Purpose" name="loan_purpose" value={form.loan_purpose} onChange={update} />
+        <Input
+          label="Loan Amount (₹)"
+          name="loan_amount"
+          value={form.loan_amount}
+          onChange={update}
+        />
+        <Input
+          label="Annual Income (₹)"
+          name="annual_income"
+          value={form.annual_income}
+          onChange={update}
+        />
+        <Input
+          label="Tenure (months)"
+          name="tenure_months"
+          value={form.tenure_months}
+          onChange={update}
+        />
+        <Input
+          label="Purpose"
+          name="loan_purpose"
+          value={form.loan_purpose}
+          onChange={update}
+        />
       </div>
 
       <div>
@@ -54,7 +96,15 @@ export default function LoanApplyForm({ onSuccess }) {
         </select>
       </div>
 
-      {loanError && <p className="text-xs text-red-600">{loanError}</p>}
+      {/* FORM VALIDATION ERROR */}
+      {formError && (
+        <p className="text-xs text-red-600">{formError}</p>
+      )}
+
+      {/* BACKEND ERROR */}
+      {loanError && (
+        <p className="text-xs text-red-600">{loanError}</p>
+      )}
 
       <button
         type="submit"
