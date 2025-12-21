@@ -1,11 +1,29 @@
 export default function LoanSummaryPanel({
-  amount = "₹45,00,000",
-  tenure = "20 Years",
-  rate = "8.5% p.a.",
-  emi = "₹38,765",
-  creditScore = 780,
-  riskLevel = "Low",
+  amount,
+  tenure,
+  rate,
+  emi,
+  creditScore,
+  riskLevel,
 }) {
+  const isLoading =
+    !amount || !tenure || !rate || !emi || creditScore === undefined;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-6 w-32 bg-gray-200 rounded" />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-10 bg-gray-200 rounded" />
+          <div className="h-10 bg-gray-200 rounded" />
+          <div className="h-10 bg-gray-200 rounded col-span-2" />
+        </div>
+        <div className="h-16 bg-gray-200 rounded" />
+        <div className="h-10 bg-gray-200 rounded" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 text-sm">
       {/* AMOUNT */}
@@ -34,7 +52,9 @@ export default function LoanSummaryPanel({
               ? "text-green-600"
               : riskLevel === "Medium"
               ? "text-yellow-600"
-              : "text-red-600"
+              : riskLevel === "High"
+              ? "text-red-600"
+              : "text-gray-500"
           }`}
         >
           {riskLevel} Risk
@@ -53,15 +73,9 @@ function Info({ label, value, highlight }) {
   return (
     <div>
       <p className="text-xs text-gray-500">{label}</p>
-      <p
-        className={`font-medium ${
-          highlight ? "text-gray-900" : "text-gray-700"
-        }`}
-      >
+      <p className={`font-medium ${highlight ? "text-gray-900" : "text-gray-700"}`}>
         {value}
       </p>
     </div>
   );
 }
-
-
