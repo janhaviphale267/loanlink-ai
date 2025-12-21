@@ -1,7 +1,7 @@
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-/* ---------- GENERIC HELPERS ---------- */
+/* ---------- GENERIC ---------- */
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
@@ -13,43 +13,34 @@ async function request(path, options = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "API request failed");
+    throw new Error(err.detail || "API request failed");
   }
 
   return res.json();
 }
 
-/* ---------- LOAN FLOW ---------- */
-export function startLoanApplication(payload) {
-  return request("/loan/start", {
+/* ---------- LOANS ---------- */
+export function applyLoan(payload) {
+  return request("/api/loans/apply", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
-export function sendChatMessage(payload) {
-  return request("/chat/message", {
+/* ---------- CHAT ---------- */
+export function startChatSession() {
+  return request("/api/chat/session", {
     method: "POST",
-    body: JSON.stringify(payload),
   });
 }
 
-export function fetchLoanSummary(applicationId) {
-  return request(`/loan/${applicationId}/summary`);
+export function sendChatMessage({ sessionId, message }) {
+  return request("/api/chat/message", {
+    method: "POST",
+    body: JSON.stringify({ sessionId, message }),
+  });
 }
 
-/* ---------- DOCUMENTS ---------- */
-export function uploadDocument(applicationId, docType, file) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("doc_type", docType);
-
-  return fetch(`${API_BASE}/documents/${applicationId}/upload`, {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  }).then((res) => {
-    if (!res.ok) throw new Error("Document upload failed");
-    return res.json();
-  });
+export function fetchConversation(sessionId) {
+  return request(`/api/chat/conversation/${sessionId}`);
 }
