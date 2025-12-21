@@ -3,10 +3,52 @@ from sqlalchemy.orm import Session
 
 from backend.dependencies import get_db
 from backend.models.loan import LoanApplication
-from backend.security.permissions import get_current_user
+from backend.security.permissions import get_current_user, require_admin
+from backend.services.loan_service import (
+    create_loan_application,
+    evaluate_loan,
+)
 
-# (keep existing imports & router)
+# ✅ ROUTER MUST BE DEFINED BEFORE USE
+router = APIRouter(prefix="/api/loans", tags=["Loans"])
 
+
+# -------------------------
+# APPLY FOR LOAN
+# -------------------------
+@router.post("/apply")
+def apply_loan(
+    data: dict,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    return create_loan_application(
+        db=db,
+        user_id=user.id,
+        loan_amount=data.get("loan_amount"),
+        loan_purpose=data.get("loan_purpose"),
+        tenure_months=data.get("tenure_months"),
+        annual_income=data.get("annual_income"),
+        employment_type=data.get("employment_type"),
+    )
+
+
+# -------------------------
+# LIST USER LOANS
+# -------------------------
+@router.get("/")
+def list_my_loans(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    return db.query(LoanApplication).filter(
+        LoanApplication.user_id == user.id
+    ).all()
+
+
+# -------------------------
+# LOAN SUMMARY (UI)
+# -------------------------
 @router.get("/{loan_id}/summary")
 def loan_summary(
     loan_id: int,
@@ -25,7 +67,6 @@ def loan_summary(
     if not loan:
         raise HTTPException(status_code=404, detail="Loan not found")
 
-    # Graceful defaults (until evaluation runs)
     interest_rate = getattr(loan, "interest_rate", None)
     emi = getattr(loan, "emi", None)
     credit_score = getattr(loan, "credit_score", None)
@@ -39,3 +80,22 @@ def loan_summary(
         "creditScore": credit_score if credit_score else "—",
         "riskLevel": risk_level if risk_level else "Pending",
     }
+
+
+# -------------------------
+# ADMIN EVALUATION
+# -------------------------
+@router.post("/{loan_id}/evaluate")
+def evaluate(
+    loan_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
+    loan = db.query(LoanApplication).filter(
+        LoanApplication.id == loan_id
+    ).first()
+
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+
+    return evaluate_loan(db, loan)
