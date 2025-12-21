@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_settings
 
@@ -17,6 +18,17 @@ app = FastAPI(
 )
 
 # =========================
+# CORS (REQUIRED FOR FRONTEND)
+# =========================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# =========================
 # ROUTERS
 # =========================
 app.include_router(auth_router)
@@ -26,12 +38,9 @@ app.include_router(loans_router)
 app.include_router(chat_router)
 app.include_router(documents_router)
 
-
 # =========================
 # HEALTH CHECK
 # =========================
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-
