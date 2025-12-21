@@ -1,80 +1,58 @@
 import { useState } from "react";
-import Header from "./components/Header";
-import MainChat from "./components/MainChat";
-import ApplicationStatus from "./components/ApplicationStatus";
-import DocumentUploadPanel from "./components/DocumentUploadPanel";
-import { Settings } from "lucide-react";
-import profileImg from "./assets/profile.png";
+import Header from "../components/Header";
+import MainChat from "../components/MainChat";
+import ApplicationStatus from "../components/ApplicationStatus";
+import DocumentUploadPanel from "../components/DocumentUploadPanel";
 
 export default function App() {
   const [activeView, setActiveView] = useState("chat");
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
-      {/* TOP BAR */}
+    <div className="h-screen flex flex-col bg-gray-50">
       <Header />
 
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT SIDEBAR */}
-        <aside className="w-64 bg-gray-200 flex flex-col justify-between">
-          {/* TOP */}
-          <div>
-            <div className="px-6 py-5 flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-md font-bold">
-                LL
-              </div>
-              <div>
-                <p className="text-sm font-semibold">LoanLink AI</p>
-                <p className="text-xs text-gray-600">
-                  AI Loan Orchestration
-                </p>
-              </div>
-            </div>
-
-            <nav className="px-4 space-y-1">
-              <SidebarItem
-                label="Applications"
-                active={activeView === "applications"}
-                onClick={() => setActiveView("applications")}
-              />
-              <SidebarItem
-                label="Documents"
-                active={activeView === "documents"}
-                onClick={() => setActiveView("documents")}
-              />
-            </nav>
+        <aside className="w-64 bg-gray-100 flex flex-col justify-between">
+          <div className="p-4 space-y-2">
+            <SidebarItem
+              label="Applications"
+              active={activeView === "applications"}
+              onClick={() => setActiveView("applications")}
+            />
+            <SidebarItem
+              label="Documents"
+              active={activeView === "documents"}
+              onClick={() => setActiveView("documents")}
+            />
           </div>
 
-          {/* BOTTOM */}
-          <div className="border-t px-4 py-4 space-y-4">
-            <SidebarItem
-              label="Settings"
-              icon={<Settings size={16} />}
-            />
-
-            <div className="flex items-center gap-3">
+          <div className="p-4 border-t">
+            <SidebarItem label="Settings" />
+            <div className="flex items-center gap-3 mt-3">
               <img
-                src={profileImg}
-                alt="profile"
-                className="w-10 h-10 rounded-full object-cover"
+                src="/profile.png"
+                className="w-9 h-9 rounded-full object-cover"
               />
               <div>
                 <p className="text-sm font-medium">Rajesh Kumar</p>
-                <p className="text-xs text-gray-600">Customer</p>
+                <p className="text-xs text-gray-500">Customer</p>
               </div>
             </div>
           </div>
         </aside>
 
         {/* MAIN CONTENT */}
-        <main className="flex-1 bg-white p-6 overflow-y-auto">
+        <main className="flex-1 bg-white overflow-hidden">
           {activeView !== "chat" && (
-            <button
-              onClick={() => setActiveView("chat")}
-              className="mb-4 text-sm text-blue-600 hover:underline"
-            >
-              ← Back to Chat
-            </button>
+            <div className="p-4">
+              <button
+                onClick={() => setActiveView("chat")}
+                className="text-sm text-blue-600"
+              >
+                ← Back to Chat
+              </button>
+            </div>
           )}
 
           {activeView === "chat" && <MainChat />}
@@ -86,18 +64,13 @@ export default function App() {
   );
 }
 
-function SidebarItem({ label, active, onClick, icon }) {
+function SidebarItem({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm
-        ${
-          active
-            ? "bg-white text-blue-600"
-            : "text-gray-700 hover:bg-gray-300"
-        }`}
+      className={`w-full text-left px-3 py-2 rounded-md text-sm
+        ${active ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-200"}`}
     >
-      {icon}
       {label}
     </button>
   );
