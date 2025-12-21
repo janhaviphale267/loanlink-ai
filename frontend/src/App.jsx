@@ -1,67 +1,25 @@
-import React from "react";
-import { Routes, Route, Link } from "react-router-dom";
-
-/**
- * IMPORTANT:
- * components folder is OUTSIDE src
- * so we must go one level up
- */
-import Header from "../components/Header.jsx";
-import MainChat from "../components/MainChat.jsx";
-import UserDashboard from "../components/UserDashboard.jsx";
-import DocumentUploadPanel from "../components/DocumentUploadPanel.jsx";
-import AdminDashboard from "../components/AdminDashboard.jsx";
+import Header from "../components/Header";
+import UserDashboard from "../components/UserDashboard";
+import MainChat from "../components/MainChat";
 
 export default function App() {
   return (
-    <div className="app-root">
+    <div className="h-screen flex flex-col bg-gray-50">
+      {/* HEADER */}
       <Header />
 
-      <main className="app-main">
-        <div className="container">
-          <Routes>
-            <Route path="/" element={<UserDashboard />} />
-            <Route path="/chat" element={<MainChat />} />
-            <Route path="/upload" element={<DocumentUploadPanel />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-
-            <Route
-              path="*"
-              element={
-                <div className="panel">
-                  <h3 style={{ marginTop: 0, color: "var(--primary)" }}>
-                    Page not found
-                  </h3>
-                  <p className="small">
-                    Use the navigation to open a valid route.
-                  </p>
-                  <div style={{ marginTop: 12 }}>
-                    <Link to="/" className="btn ghost">
-                      Go home
-                    </Link>
-                    <Link
-                      to="/chat"
-                      className="btn primary"
-                      style={{ marginLeft: 8 }}
-                    >
-                      Open chat
-                    </Link>
-                  </div>
-                </div>
-              }
-            />
-          </Routes>
+      {/* MAIN LAYOUT */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* LEFT SIDEBAR */}
+        <div className="hidden md:block">
+          <UserDashboard />
         </div>
-      </main>
 
-      <footer className="app-footer">
-        <div>LoanLink AI — Secure & Conversational Loan Processing</div>
-        <nav style={{ marginTop: 8 }}>
-          <Link to="/" className="small">Dashboard</Link> |{" "}
-          <Link to="/chat" className="small">Chat</Link> |{" "}
-          <Link to="/admin" className="small">Admin</Link>
-        </nav>
-      </footer>
+        {/* CHAT AREA */}
+        <main className="flex-1 overflow-hidden">
+          <MainChat />
+        </main>
+      </div>
     </div>
   );
 }
