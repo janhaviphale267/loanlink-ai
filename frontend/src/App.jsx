@@ -1,6 +1,11 @@
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
+/**
+ * IMPORTANT:
+ * components folder is OUTSIDE src
+ * so we must go one level up
+ */
 import Header from "../components/Header.jsx";
 import MainChat from "../components/MainChat.jsx";
 import UserDashboard from "../components/UserDashboard.jsx";
@@ -30,13 +35,33 @@ export default function App() {
                   <p className="small">
                     Use the navigation to open a valid route.
                   </p>
-                  <Link to="/" className="btn primary">Go Home</Link>
+                  <div style={{ marginTop: 12 }}>
+                    <Link to="/" className="btn ghost">
+                      Go home
+                    </Link>
+                    <Link
+                      to="/chat"
+                      className="btn primary"
+                      style={{ marginLeft: 8 }}
+                    >
+                      Open chat
+                    </Link>
+                  </div>
                 </div>
               }
             />
           </Routes>
         </div>
       </main>
+
+      <footer className="app-footer">
+        <div>LoanLink AI — Secure & Conversational Loan Processing</div>
+        <nav style={{ marginTop: 8 }}>
+          <Link to="/" className="small">Dashboard</Link> |{" "}
+          <Link to="/chat" className="small">Chat</Link> |{" "}
+          <Link to="/admin" className="small">Admin</Link>
+        </nav>
+      </footer>
     </div>
   );
 }
