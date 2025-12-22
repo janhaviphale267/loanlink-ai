@@ -8,12 +8,12 @@ export default function App() {
   const [activeView, setActiveView] = useState("chat");
 
   return (
-    <div className="h-screen flex bg-gray-100">
+    <div className="h-screen flex bg-[#f5f6f8]">
       {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-gray-200 flex flex-col justify-between px-4 py-6">
+      <aside className="w-64 bg-[#eef0f3] flex flex-col justify-between px-5 py-6">
         <div>
           {/* BRAND */}
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-10">
             <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
               LL
             </div>
@@ -23,7 +23,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* NAVIGATION */}
+          {/* NAV */}
           <nav className="space-y-2">
             <SidebarItem
               label="Chat"
@@ -65,10 +65,10 @@ export default function App() {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 bg-white flex flex-col">
+      <main className="flex-1 bg-white ml-6 rounded-l-xl flex flex-col">
         {/* BACK TO CHAT */}
         {activeView !== "chat" && (
-          <div className="px-6 py-4">
+          <div className="px-8 py-5">
             <button
               onClick={() => setActiveView("chat")}
               className="text-sm text-blue-600 hover:underline"
@@ -78,8 +78,7 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW SWITCH */}
-        <div className="flex-1">
+        <div className="flex-1 px-8 pb-6">
           {activeView === "chat" && <MainChat />}
           {activeView === "applications" && <ApplicationStatus />}
           {activeView === "documents" && <DocumentUploadPanel />}
@@ -96,8 +95,8 @@ function SidebarItem({ label, active, onClick }) {
       className={`w-full text-left px-4 py-2 rounded-md text-sm transition
         ${
           active
-            ? "bg-white text-blue-600 font-medium"
-            : "text-gray-700 hover:bg-gray-300"
+            ? "bg-white text-blue-600 font-medium shadow-sm"
+            : "text-gray-700 hover:bg-gray-200"
         }`}
     >
       {label}
