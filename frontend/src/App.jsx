@@ -23,7 +23,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* NAV */}
+          {/* NAVIGATION */}
           <nav className="space-y-2">
             <SidebarItem
               label="Chat"
@@ -52,7 +52,7 @@ export default function App() {
 
           <div className="flex items-center gap-3">
             <img
-              src="/profile.png"
+              src="/profile.jpeg"
               alt="Rajesh Kumar"
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -78,6 +78,7 @@ export default function App() {
           </div>
         )}
 
+        {/* VIEW SWITCH */}
         <div className="flex-1">
           {activeView === "chat" && <MainChat />}
           {activeView === "applications" && <ApplicationStatus />}
