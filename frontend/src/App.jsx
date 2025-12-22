@@ -1,9 +1,7 @@
 import { useState } from "react";
-import Header from "../components/Header";
 import MainChat from "../components/MainChat";
 import ApplicationStatus from "../components/ApplicationStatus";
 import DocumentUploadPanel from "../components/DocumentUploadPanel";
-
 import { Settings } from "lucide-react";
 
 export default function App() {
@@ -11,49 +9,46 @@ export default function App() {
 
   return (
     <div className="h-screen flex bg-gray-100">
-      {/* ================= LEFT SIDEBAR ================= */}
+      {/* LEFT SIDEBAR */}
       <aside className="w-64 bg-gray-200 flex flex-col justify-between px-4 py-6">
-        {/* TOP */}
         <div>
-          {/* BRAND (ONLY ONCE) */}
+          {/* BRAND */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
               LL
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">
-                LoanLink AI
-              </p>
-              <p className="text-xs text-gray-500">
-                AI Loan Orchestration
-              </p>
+              <p className="font-semibold text-gray-900">LoanLink AI</p>
+              <p className="text-xs text-gray-600">AI Loan Orchestration</p>
             </div>
           </div>
 
           {/* NAV */}
-          <SidebarItem
-            label="Chat"
-            active={activeView === "chat"}
-            onClick={() => setActiveView("chat")}
-          />
-          <SidebarItem
-            label="Applications"
-            active={activeView === "applications"}
-            onClick={() => setActiveView("applications")}
-          />
-          <SidebarItem
-            label="Documents"
-            active={activeView === "documents"}
-            onClick={() => setActiveView("documents")}
-          />
+          <nav className="space-y-2">
+            <SidebarItem
+              label="Chat"
+              active={activeView === "chat"}
+              onClick={() => setActiveView("chat")}
+            />
+            <SidebarItem
+              label="Applications"
+              active={activeView === "applications"}
+              onClick={() => setActiveView("applications")}
+            />
+            <SidebarItem
+              label="Documents"
+              active={activeView === "documents"}
+              onClick={() => setActiveView("documents")}
+            />
+          </nav>
         </div>
 
-        {/* BOTTOM */}
+        {/* FOOTER */}
         <div className="space-y-4">
-          <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+          <div className="flex items-center gap-2 text-gray-700 text-sm">
             <Settings size={16} />
-            Settings
-          </button>
+            <span>Settings</span>
+          </div>
 
           <div className="flex items-center gap-3">
             <img
@@ -62,22 +57,32 @@ export default function App() {
               className="w-10 h-10 rounded-full object-cover"
             />
             <div>
-              <p className="text-sm font-medium text-gray-900">
-                Rajesh Kumar
-              </p>
-              <p className="text-xs text-gray-500">
-                Customer
-              </p>
+              <p className="text-sm font-medium">Rajesh Kumar</p>
+              <p className="text-xs text-gray-600">Customer</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* ================= MAIN CONTENT ================= */}
-      <main className="flex-1 bg-white m-4 rounded-xl overflow-hidden">
-        {activeView === "chat" && <MainChat />}
-        {activeView === "applications" && <ApplicationStatus />}
-        {activeView === "documents" && <DocumentUploadPanel />}
+      {/* MAIN CONTENT */}
+      <main className="flex-1 bg-white flex flex-col">
+        {/* BACK TO CHAT */}
+        {activeView !== "chat" && (
+          <div className="px-6 py-4">
+            <button
+              onClick={() => setActiveView("chat")}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              ← Back to Chat
+            </button>
+          </div>
+        )}
+
+        <div className="flex-1">
+          {activeView === "chat" && <MainChat />}
+          {activeView === "applications" && <ApplicationStatus />}
+          {activeView === "documents" && <DocumentUploadPanel />}
+        </div>
       </main>
     </div>
   );
@@ -87,10 +92,10 @@ function SidebarItem({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-3 py-2 rounded-md text-sm mb-1
+      className={`w-full text-left px-4 py-2 rounded-md text-sm transition
         ${
           active
-            ? "bg-white text-blue-600 shadow-sm"
+            ? "bg-white text-blue-600 font-medium"
             : "text-gray-700 hover:bg-gray-300"
         }`}
     >
