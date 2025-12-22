@@ -1,7 +1,9 @@
 import { useState } from "react";
-import MainChat from "./components/MainChat";
-import ApplicationStatus from "./components/ApplicationStatus";
-import DocumentUploadPanel from "./components/DocumentUploadPanel";
+import Header from "../components/Header";
+import MainChat from "../components/MainChat";
+import ApplicationStatus from "../components/ApplicationStatus";
+import DocumentUploadPanel from "../components/DocumentUploadPanel";
+
 import { Settings } from "lucide-react";
 
 export default function App() {
