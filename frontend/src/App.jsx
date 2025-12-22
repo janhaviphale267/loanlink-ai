@@ -8,12 +8,14 @@ export default function App() {
   const [activeView, setActiveView] = useState("chat");
 
   return (
-    <div className="h-screen flex bg-white">
+    /* ROOT SCROLL CONTAINER */
+    <div className="min-h-screen flex bg-white">
+      
       {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-[#eef0f3] flex flex-col justify-between px-5 py-6">
+      <aside className="w-64 bg-gray-100 flex flex-col justify-between px-4 py-6">
         <div>
           {/* BRAND */}
-          <div className="flex items-center gap-3 mb-10">
+          <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
               LL
             </div>
@@ -64,11 +66,12 @@ export default function App() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT – NO GAP */}
-      <main className="flex-1 bg-white flex flex-col">
+      {/* MAIN CONTENT */}
+      <main className="flex-1 bg-white px-8 py-6">
+        
         {/* BACK TO CHAT */}
         {activeView !== "chat" && (
-          <div className="px-8 py-5">
+          <div className="mb-4">
             <button
               onClick={() => setActiveView("chat")}
               className="text-sm text-blue-600 hover:underline"
@@ -78,17 +81,16 @@ export default function App() {
           </div>
         )}
 
-        {/* CONTENT WITH INTERNAL PADDING */}
-        <div className="flex-1 px-10 pb-6">
-          {activeView === "chat" && <MainChat />}
-          {activeView === "applications" && <ApplicationStatus />}
-          {activeView === "documents" && <DocumentUploadPanel />}
-        </div>
+        {/* CONTENT */}
+        {activeView === "chat" && <MainChat />}
+        {activeView === "applications" && <ApplicationStatus />}
+        {activeView === "documents" && <DocumentUploadPanel />}
       </main>
     </div>
   );
 }
 
+/* SIDEBAR ITEM */
 function SidebarItem({ label, active, onClick }) {
   return (
     <button
