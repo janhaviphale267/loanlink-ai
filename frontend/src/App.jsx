@@ -8,10 +8,10 @@ export default function App() {
   const [activeView, setActiveView] = useState("chat");
 
   return (
-    /* ROOT SCROLL CONTAINER */
-    <div className="min-h-screen flex bg-white">
-      
-      {/* LEFT SIDEBAR */}
+    /* ROOT: NO SCROLL */
+    <div className="h-screen flex bg-white overflow-hidden">
+
+      {/* LEFT SIDEBAR – FIXED, NO SCROLL */}
       <aside className="w-64 bg-gray-100 flex flex-col justify-between px-4 py-6">
         <div>
           {/* BRAND */}
@@ -27,21 +27,9 @@ export default function App() {
 
           {/* NAV */}
           <nav className="space-y-2">
-            <SidebarItem
-              label="Chat"
-              active={activeView === "chat"}
-              onClick={() => setActiveView("chat")}
-            />
-            <SidebarItem
-              label="Applications"
-              active={activeView === "applications"}
-              onClick={() => setActiveView("applications")}
-            />
-            <SidebarItem
-              label="Documents"
-              active={activeView === "documents"}
-              onClick={() => setActiveView("documents")}
-            />
+            <SidebarItem label="Chat" active={activeView === "chat"} onClick={() => setActiveView("chat")} />
+            <SidebarItem label="Applications" active={activeView === "applications"} onClick={() => setActiveView("applications")} />
+            <SidebarItem label="Documents" active={activeView === "documents"} onClick={() => setActiveView("documents")} />
           </nav>
         </div>
 
@@ -66,12 +54,12 @@ export default function App() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 bg-white px-8 py-6">
-        
-        {/* BACK TO CHAT */}
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col bg-white">
+
+        {/* BACK BUTTON – FIXED */}
         {activeView !== "chat" && (
-          <div className="mb-4">
+          <div className="px-8 py-4 border-b">
             <button
               onClick={() => setActiveView("chat")}
               className="text-sm text-blue-600 hover:underline"
@@ -81,26 +69,23 @@ export default function App() {
           </div>
         )}
 
-        {/* CONTENT */}
-        {activeView === "chat" && <MainChat />}
-        {activeView === "applications" && <ApplicationStatus />}
-        {activeView === "documents" && <DocumentUploadPanel />}
+        {/* SCROLLABLE CONTENT PANEL */}
+        <div className="flex-1 overflow-y-auto px-8 py-6">
+          {activeView === "chat" && <MainChat />}
+          {activeView === "applications" && <ApplicationStatus />}
+          {activeView === "documents" && <DocumentUploadPanel />}
+        </div>
       </main>
     </div>
   );
 }
 
-/* SIDEBAR ITEM */
 function SidebarItem({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
       className={`w-full text-left px-4 py-2 rounded-md text-sm transition
-        ${
-          active
-            ? "bg-white text-blue-600 font-medium shadow-sm"
-            : "text-gray-700 hover:bg-gray-200"
-        }`}
+        ${active ? "bg-white text-blue-600 font-medium shadow-sm" : "text-gray-700 hover:bg-gray-200"}`}
     >
       {label}
     </button>
