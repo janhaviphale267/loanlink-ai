@@ -1,14 +1,11 @@
 import { Send, Loader2, Mic } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import ChatBubble from "./ChatBubble";
 import { useLoanContext } from "../hooks/LoanContext";
 
 export default function MainChat() {
-  const { messages, chatLoading, chatError, sendMessage } =
-    useLoanContext();
-
+  const { messages, chatLoading, chatError, sendMessage } = useLoanContext();
   const [input, setInput] = useState("");
-  const recognitionRef = useRef(null);
 
   function handleSend() {
     if (!input.trim()) return;
@@ -16,28 +13,10 @@ export default function MainChat() {
     setInput("");
   }
 
-  function handleVoice() {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Voice input not supported in this browser");
-      return;
-    }
-
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.lang = "en-IN";
-    recognition.interimResults = false;
-
-    recognition.onresult = (e) => {
-      setInput(e.results[0][0].transcript);
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
-  }
-
   return (
-    <section className="flex flex-col h-full">
+    <section className="h-full flex flex-col bg-white">
       {/* CHAT STREAM */}
-      <div className="flex-1 overflow-y-auto space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
         {messages.length === 0 && (
           <ChatBubble
             sender="ai"
@@ -65,34 +44,36 @@ export default function MainChat() {
 
       {/* ERROR */}
       {chatError && (
-        <div className="text-xs text-red-600 mt-2">{chatError}</div>
+        <div className="px-6 py-2 text-xs text-red-600">{chatError}</div>
       )}
 
-      {/* INPUT */}
-      <div className="mt-4 flex items-center gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type or speak your message…"
-          className="flex-1 border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-        />
+      {/* INPUT BAR */}
+      <div className="border-t px-6 py-4">
+        <div className="flex items-center gap-3">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type or speak your message…"
+            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+          />
 
-        <button
-          onClick={handleVoice}
-          className="border p-2 rounded-md hover:bg-gray-100"
-          title="Voice input"
-        >
-          <Mic size={16} />
-        </button>
+          <button
+            type="button"
+            className="border p-2 rounded-md hover:bg-gray-100"
+            title="Voice input"
+          >
+            <Mic size={16} />
+          </button>
 
-        <button
-          onClick={handleSend}
-          disabled={!input.trim() || chatLoading}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-md"
-        >
-          <Send size={16} />
-        </button>
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || chatLoading}
+            className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+          >
+            <Send size={16} />
+          </button>
+        </div>
       </div>
     </section>
   );
