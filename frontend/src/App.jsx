@@ -8,7 +8,7 @@ export default function App() {
   const [activeView, setActiveView] = useState("chat");
 
   return (
-    <div className="h-screen flex bg-[#f5f6f8]">
+    <div className="h-screen flex bg-white">
       {/* LEFT SIDEBAR */}
       <aside className="w-64 bg-[#eef0f3] flex flex-col justify-between px-5 py-6">
         <div>
@@ -64,8 +64,8 @@ export default function App() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 bg-white ml-6 rounded-l-xl flex flex-col">
+      {/* MAIN CONTENT – NO GAP */}
+      <main className="flex-1 bg-white flex flex-col">
         {/* BACK TO CHAT */}
         {activeView !== "chat" && (
           <div className="px-8 py-5">
@@ -78,7 +78,8 @@ export default function App() {
           </div>
         )}
 
-        <div className="flex-1 px-8 pb-6">
+        {/* CONTENT WITH INTERNAL PADDING */}
+        <div className="flex-1 px-10 pb-6">
           {activeView === "chat" && <MainChat />}
           {activeView === "applications" && <ApplicationStatus />}
           {activeView === "documents" && <DocumentUploadPanel />}
