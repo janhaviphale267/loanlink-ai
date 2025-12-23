@@ -1,3 +1,4 @@
+// frontend/components/DocumentUploadPanel.jsx
 import { useState } from "react";
 import DocumentItem from "./DocumentItem";
 
@@ -110,7 +111,6 @@ export default function DocumentUploadPanel() {
   );
 }
 
-/* ---------- Helper Section Wrapper ---------- */
 function Section({ title, children }) {
   return (
     <div className="space-y-3">

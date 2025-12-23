@@ -1,89 +1,51 @@
-import { Send, Loader2, Mic } from "lucide-react";
+// frontend/components/MainChat.jsx
+import { Mic, Send } from "lucide-react";
 import { useState } from "react";
 import ChatBubble from "./ChatBubble";
-import { useLoanContext } from "../hooks/LoanContext";
 
 export default function MainChat() {
-  const {
-    messages,
-    chatLoading,
-    chatError,
-    sendMessage,
-  } = useLoanContext();
-
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([
+    { sender: "ai", message: "Hello 👋 I’m your AI Loan Officer." },
+  ]);
 
-  function handleSend() {
+  function send() {
     if (!input.trim()) return;
-    sendMessage(input);
+    setMessages((m) => [...m, { sender: "user", message: input }]);
     setInput("");
   }
 
   return (
-    <section className="flex flex-col h-full bg-white">
-      {/* CHAT STREAM */}
-      <div className="flex-1 overflow-y-auto px-10 py-6 space-y-4">
-        {messages.length === 0 && (
-          <ChatBubble
-            sender="ai"
-            message="Hello 👋 I’m your AI Loan Officer. How can I help you today?"
-            confidence={95}
-          />
-        )}
-
-        {messages.map((msg, idx) => (
-          <ChatBubble
-            key={idx}
-            sender={msg.sender}
-            message={msg.message}
-            confidence={msg.confidence}
-          />
+    <div className="flex flex-col h-full">
+      {/* CHAT AREA */}
+      <div className="flex-1 overflow-auto space-y-4 pb-4">
+        {messages.map((m, i) => (
+          <ChatBubble key={i} {...m} />
         ))}
-
-        {chatLoading && (
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Loader2 className="animate-spin" size={14} />
-            AI is typing…
-          </div>
-        )}
       </div>
 
-      {/* ERROR TOAST */}
-      {chatError && (
-        <div className="absolute bottom-28 right-10 bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-md shadow">
-          {chatError}
-        </div>
-      )}
+      {/* INPUT BAR */}
+      <div className="pt-3 flex items-center gap-3">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 border rounded-full px-4 h-12 text-sm"
+        />
 
-      {/* INPUT BAR – JOINED & LOWERED */}
-      <div className="px-10 pb-6 pt-3 bg-white">
-        <div className="flex items-center gap-3">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type or speak your message..."
-            className="flex-1 text-sm px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+        {/* MIC */}
+        <button className="h-12 w-12 flex items-center justify-center rounded-full border text-gray-600 hover:text-blue-600">
+          <Mic size={21} />
+        </button>
 
-          {/* VOICE */}
-          <button
-            title="Voice input"
-            className="border p-3 rounded-lg hover:bg-gray-100"
-          >
-            <Mic size={18} />
-          </button>
-
-          {/* SEND */}
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || chatLoading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white p-3 rounded-lg"
-          >
-            <Send size={18} />
-          </button>
-        </div>
+        {/* SEND */}
+        <button
+          onClick={send}
+          className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-600 text-white"
+        >
+          <Send size={20} />
+        </button>
       </div>
-    </section>
+    </div>
   );
 }

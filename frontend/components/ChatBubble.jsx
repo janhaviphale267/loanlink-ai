@@ -1,3 +1,4 @@
+// frontend/components/ChatBubble.jsx
 export default function ChatBubble({ sender, message, confidence }) {
   const isAI = sender === "ai";
 

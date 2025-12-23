@@ -1,3 +1,4 @@
+// frontend/components/ApplicationStatus.jsx
 const STEPS = [
   {
     key: "requirements",
