@@ -1,75 +1,93 @@
-// frontend/components/Sidebar.jsx
 import {
   MessageSquare,
   ClipboardList,
   FileText,
-  Settings,
+  BarChart2,
+  Upload,
+  CreditCard,
+  Users,
   LogOut,
+  Brain,
+  Calculator
 } from "lucide-react";
 
 export default function Sidebar({ activeView, setActiveView, onLogout }) {
   return (
-    <aside className="w-64 bg-[#F4F5F7] flex flex-col justify-between border-r border-gray-200">
-      {/* TOP LOGO */}
+    <aside className="w-64 bg-[#0F2A44] text-white flex flex-col justify-between">
+      {/* HEADER */}
       <div>
-        <div className="h-14 px-5 border-b border-gray-200 flex items-center gap-2">
+        <div className="px-5 py-4 border-b border-white/10 flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 text-white rounded flex items-center justify-center font-bold">
             LL
           </div>
-          <span className="font-semibold text-gray-900">
-            LoanLink AI
-          </span>
+          <div>
+            <p className="font-semibold leading-none">LoanLink AI</p>
+            <p className="text-xs text-gray-300">AI Loan Orchestration</p>
+          </div>
         </div>
 
-        {/* NAV */}
+        {/* MAIN NAV */}
         <nav className="px-3 py-4 space-y-1 text-sm">
-          <Item
-            label="Chat"
-            active={activeView === "chat"}
-            onClick={() => setActiveView("chat")}
-          />
-          <Item
-            label="Applications"
-            active={activeView === "applications"}
-            onClick={() => setActiveView("applications")}
-          />
-          <Item
-            label="Documents"
-            active={activeView === "documents"}
-            onClick={() => setActiveView("documents")}
-          />
+          <NavItem icon={<MessageSquare size={18} />} label="Chat" active={activeView === "chat"} onClick={() => setActiveView("chat")} />
+          <NavItem icon={<ClipboardList size={18} />} label="Applications" active={activeView === "applications"} onClick={() => setActiveView("applications")} />
+          <NavItem icon={<FileText size={18} />} label="Documents" active={activeView === "documents"} onClick={() => setActiveView("documents")} />
+          <NavItem icon={<BarChart2 size={18} />} label="Analytics" active={activeView === "analytics"} />
+          <NavItem icon={<Brain size={18} />} label="Intelligence Panel" active={activeView === "intelligence"} />
         </nav>
       </div>
 
-      {/* BOTTOM */}
-      <div className="px-4 py-4 border-t border-gray-200 space-y-3">
-        <button className="flex items-center gap-2 text-sm text-gray-700">
-          <Settings size={16} /> Settings
-        </button>
+      {/* QUICK ACTIONS + PROFILE */}
+      <div className="px-3 pb-3">
+        <p className="text-xs text-gray-400 mb-2 px-2">QUICK ACTIONS</p>
 
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-2 text-sm text-red-600"
+        <QuickItem icon={<Upload size={18} />} label="Upload Documents" />
+        <QuickItem icon={<CreditCard size={18} />} label="Make Payment" />
+        <QuickItem icon={<Users size={18} />} label="Refer a Friend" />
+        <QuickItem icon={<Calculator size={18} />} label="EMI Calculator" />
+
+        <div
+          className="border-t border-white/10 mt-2 pt-3 cursor-pointer"
+          onClick={() => setActiveView("profile")}
         >
-          <LogOut size={16} /> Logout
-        </button>
+          <div className="flex items-center gap-3 px-2">
+            <img src="/profile.jpeg" className="w-9 h-9 rounded-full" />
+            <div>
+              <p className="text-sm font-medium">Rajesh Kumar</p>
+              <p className="text-xs text-gray-400">Customer</p>
+            </div>
+          </div>
+
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 mt-3 pl-3 text-sm text-red-400"
+          >
+            <LogOut size={16} /> Logout
+          </button>
+        </div>
       </div>
     </aside>
   );
 }
 
-function Item({ label, active, onClick }) {
+function NavItem({ icon, label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-3 py-2 rounded-md transition
-        ${
-          active
-            ? "bg-white shadow-sm font-medium"
-            : "hover:bg-white"
-        }`}
+      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md ${
+        active ? "bg-white/10" : "hover:bg-white/10"
+      }`}
     >
-      {label}
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function QuickItem({ icon, label }) {
+  return (
+    <button className="w-full flex items-center gap-3 px-2 py-2 text-sm hover:bg-white/10 rounded-md">
+      {icon}
+      <span>{label}</span>
     </button>
   );
 }

@@ -1,26 +1,29 @@
-import { Menu } from "lucide-react";
+// frontend/components/TopBar.jsx
+import { Bell, Settings, Menu } from "lucide-react";
 
-export default function TopBar({ onToggleIntel, onProfile }) {
+export default function TopBar({ onToggleIntel }) {
   return (
-    <header className="h-14 bg-white px-6 flex items-center justify-end gap-4 border-b border-gray-200">
-      {/* PROFILE */}
-      <button
-        onClick={onProfile}
-        className="flex items-center gap-2"
-      >
-        <img src="/profile.jpeg" className="w-8 h-8 rounded-full" />
-        <span className="text-sm font-medium text-gray-900">
-          Rajesh Kumar
-        </span>
-      </button>
+    <header className="h-14 bg-white px-6 flex items-center justify-end border-b border-gray-200">
+      <div className="flex items-center gap-4">
+        {/* NOTIFICATION */}
+        <button className="relative p-2 hover:bg-gray-100 rounded-md">
+          <Bell size={20} />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+        </button>
 
-      {/* THREE LINE MENU */}
-      <button
-        onClick={onToggleIntel}
-        className="p-2 hover:bg-gray-100 rounded-md"
-      >
-        <Menu size={18} />
-      </button>
+        {/* SETTINGS */}
+        <button className="p-2 hover:bg-gray-100 rounded-md">
+          <Settings size={20} />
+        </button>
+
+        {/* THREE LINE MENU */}
+        <button
+          onClick={onToggleIntel}
+          className="p-2 hover:bg-gray-100 rounded-md"
+        >
+          <Menu size={18} />
+        </button>
+      </div>
     </header>
   );
 }
