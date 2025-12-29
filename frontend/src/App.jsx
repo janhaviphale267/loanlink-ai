@@ -5,60 +5,53 @@ import Sidebar from "../components/Sidebar";
 import MainChat from "../components/MainChat";
 import ApplicationStatus from "../components/ApplicationStatus";
 import DocumentUploadPanel from "../components/DocumentUploadPanel";
+import ProfileDetails from "../components/ProfileDetails";
 import RightIntelligencePanel from "../components/RightIntelligencePanel";
 import TopBar from "../components/TopBar";
-import ProfileDetails from "../components/ProfileDetails";
-import BackToChat from "../components/BackToChat";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeView, setActiveView] = useState("chat");
   const [showIntel, setShowIntel] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
 
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
   }
 
   return (
-    <div className="h-screen flex bg-[#F7F8FA]">
-      {/* LEFT SIDEBAR (FULL HEIGHT) */}
+    <div className="h-screen flex overflow-hidden">
+      {/* LEFT SIDEBAR */}
       <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
         onLogout={() => setIsLoggedIn(false)}
       />
 
-      {/* RIGHT AREA */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* TOP BAR (SEPARATE STRIP) */}
-        <TopBar
-          onToggleIntel={() => setShowIntel((s) => !s)}
-          onProfile={() => setShowProfile(true)}
-        />
+      {/* MAIN CONTENT */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <TopBar onToggleIntel={() => setShowIntel(!showIntel)} />
 
-        {/* BODY */}
         <div className="flex flex-1 overflow-hidden">
-          {/* CENTER CONTENT */}
-          <section className="flex-1 bg-white p-6 overflow-auto">
-            {activeView !== "chat" && (
-              <BackToChat onBack={() => setActiveView("chat")} />
+          {/* MAIN VIEW */}
+          <div className="flex-1 overflow-y-auto p-6 bg-white">
+            {activeView === "chat" && <MainChat />}
+
+            {activeView === "applications" && (
+              <ApplicationStatus onBack={() => setActiveView("chat")} />
             )}
 
-            {activeView === "chat" && <MainChat />}
-            {activeView === "applications" && <ApplicationStatus />}
-            {activeView === "documents" && <DocumentUploadPanel />}
-          </section>
+            {activeView === "documents" && (
+              <DocumentUploadPanel onBack={() => setActiveView("chat")} />
+            )}
 
-          {/* RIGHT INTELLIGENCE PANEL */}
+            {activeView === "profile" && (
+              <ProfileDetails onBack={() => setActiveView("chat")} />
+            )}
+          </div>
+
           {showIntel && <RightIntelligencePanel />}
         </div>
       </div>
-
-      {/* PROFILE DRAWER */}
-      {showProfile && (
-        <ProfileDetails onClose={() => setShowProfile(false)} />
-      )}
     </div>
   );
 }
