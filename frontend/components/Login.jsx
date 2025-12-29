@@ -5,29 +5,40 @@ export default function Login({ onLogin }) {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = () => {
     if (email === "rajesh.kumar@dummy.com" && password === "Rajesh@123") {
+      setError("");
       onLogin();
+    } else {
+      setError("Invalid Email or Password");
     }
   };
 
   return (
-    <div className="h-screen flex">
-      <div
-        className="w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg.png')" }}
-      />
+    <div className="h-screen w-full flex overflow-hidden">
+      {/* LEFT IMAGE SECTION */}
+      <div className="w-1/2 h-full">
+        <img
+          src="/login-bg.png"
+          alt="Login Illustration"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      <div className="w-1/2 flex items-center justify-center bg-[#F7F8FA] relative">
-        <div className="absolute top-6 right-6 flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 text-white flex items-center justify-center rounded">
+      {/* RIGHT LOGIN SECTION */}
+      <div className="w-1/2 flex items-center justify-center bg-[#f7f8fa] relative">
+        {/* LOGO */}
+        <div className="absolute top-6 right-8 flex items-center gap-2">
+          <div className="w-9 h-9 bg-blue-600 text-white rounded-md flex items-center justify-center font-semibold">
             LL
           </div>
-          <span className="font-medium">LoanLink AI</span>
+          <span className="font-semibold text-gray-800">LoanLink AI</span>
         </div>
 
-        <div className="w-[380px] bg-white shadow-xl rounded-xl p-8">
+        {/* LOGIN CARD */}
+        <div className="w-[420px] bg-white rounded-xl shadow-lg p-8">
           <h2 className="text-2xl font-semibold mb-1">Welcome Back</h2>
           <p className="text-sm text-gray-500 mb-6">
             Login to your LoanLink AI account
@@ -56,9 +67,13 @@ export default function Login({ onLogin }) {
             </button>
           </div>
 
+          {error && (
+            <p className="text-red-500 text-sm mt-2">{error}</p>
+          )}
+
           <button
             onClick={handleLogin}
-            className="w-full bg-blue-600 text-white rounded py-2 mt-6"
+            className="w-full bg-blue-600 text-white rounded py-2 mt-6 hover:bg-blue-700 transition"
           >
             Login
           </button>
